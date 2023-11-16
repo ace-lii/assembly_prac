@@ -1,0 +1,42 @@
+;
+; lab1.asm
+;
+; Created: 14/09/2023 3:38:32 AM
+; Author : li
+
+.include "m2560def.inc"
+; Define registers
+.def input = r16          ; Register for input data
+.def sign = r20           ; Sign bit register
+.def sign_ascii = r17     ; Register for the ASCII code of the sign
+.def res = r18            ; Result register
+.def start_ascii = r19    ; Register for ASCII '0'
+
+ldi input, -9         ;init the input with a value
+ldi start_ascii, 48           ; Ascii code 48 corresponds to '0'
+
+bst input, 7      ; Store bit 7 into the T flag
+bld sign, 0       ; Load T flag into  sign 0
+
+; Compare bit 0 to 1 and branch to ELSE if greater than or equal (negative)
+cpi sign, 1
+brge ELSE
+; If bit 0 is greater than or equal to 1, it's negative, set the sign character to '+'
+ldi sign_ascii, 43 ; ASCII code 43 corresponds to '+'
+rjmp END           ; Jump to the END label
+
+ELSE:
+; If bit 0 is not greater than or equal to 1, it's positive, set the sign character to '-'
+ldi sign_ascii, 45 ; ASCII code 45 corresponds to '-'
+subi input, 1      ; Subtract 1 from the input
+com input          ; Negate the input to make it negative
+END:
+
+; Load ASCII character '0' into the start_ascii register
+ldi start_ascii, 48 ; ASCII code 48 corresponds to '0'
+
+; Add the input value to ASCII '0' and store the result in the res register
+add input, start_ascii
+mov res, input
+halt: 
+	rjmp halt ; halt the processor execution	
